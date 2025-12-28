@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WhiteLagoon.Application.Common.Interfaces;
 using WhiteLagoon.Domain.Entities;
 using WhiteLagoon.Infrastructure.Data;
 using WhiteLagoon.Web.UIHelpers;
@@ -7,16 +8,16 @@ namespace WhiteLagoon.Web.Controllers
 {
     public class VilasController : Controller
     {
-        private readonly ApplicationDBContext _db;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public VilasController(ApplicationDBContext db)
+        public VilasController(IUnitOfWork unitOfWork)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
         {
-            var vilas = _db.Vilas.ToList();
+            var vilas = _unitOfWork.Villa.GetAll();
             return View(vilas);
         }
 
@@ -37,15 +38,15 @@ namespace WhiteLagoon.Web.Controllers
                 return View();
             }
 
-            _db.Vilas.Add(vila);
-            _db.SaveChanges();
+            _unitOfWork.Villa.Add(vila);
+            _unitOfWork.SaveChanges();
 
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Edit(int id)
         {
-            var vilaFromDb = _db.Vilas.FirstOrDefault(vila => vila.Id == id);
+            var vilaFromDb = _unitOfWork.Villa.Get(vila => vila.Id == id);
             if (vilaFromDb is null)
             {
                 this.ShowError("Vila not found.");
@@ -60,8 +61,8 @@ namespace WhiteLagoon.Web.Controllers
         {
             if (ModelState.IsValid && vila.Id > 0)
             {
-                _db.Vilas.Update(vila);
-                _db.SaveChanges();
+                _unitOfWork.Villa.Update(vila);
+                _unitOfWork.SaveChanges();
 
                 this.ShowSuccess("Vila updated successfully.");
                 return RedirectToAction(nameof(Index));
@@ -74,15 +75,15 @@ namespace WhiteLagoon.Web.Controllers
 
         public IActionResult Delete(int id)
         {
-            var vilaFromDb = _db.Vilas.FirstOrDefault(vila => vila.Id == id);
+            var vilaFromDb = _unitOfWork.Villa.Get(vila => vila.Id == id);
             if (vilaFromDb is null)
             {
                 this.ShowError("Vila not found.");
                 return RedirectToAction(nameof(HomeController.Error), "Home");
             }
 
-            _db.Vilas.Remove(vilaFromDb);
-            _db.SaveChanges();
+            _unitOfWork.Villa.Remove(vilaFromDb);
+            _unitOfWork.SaveChanges();
 
             this.ShowSuccess($"Vila {vilaFromDb.Name} deleted successfully.");
             return RedirectToAction(nameof(Index));

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using WhiteLagoon.Application.Common.Interfaces;
 using WhiteLagoon.Domain.Entities;
 using WhiteLagoon.Infrastructure.Data;
 using WhiteLagoon.Web.UIHelpers;
@@ -10,16 +11,16 @@ namespace WhiteLagoon.Web.Controllers
 {
     public class VilaNumberController : Controller
     {
-        private readonly ApplicationDBContext _db;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public VilaNumberController(ApplicationDBContext db)
+        public VilaNumberController(IUnitOfWork unitOfWork)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
         {
-            var vilaNumbers = _db.VilaNumbers.Include(vilaNumber => vilaNumber.Vila).ToList();
+            var vilaNumbers = _unitOfWork.VilaNumber.GetAll(includeProperties: new string[] { nameof(Vila) }).ToList();
             return View(vilaNumbers);
         }
 
@@ -34,7 +35,7 @@ namespace WhiteLagoon.Web.Controllers
 
         private List<SelectListItem> GetVitaList()
         {
-            return _db.Vilas
+            return _unitOfWork.Villa.GetAll()
                             .Select(vila => new SelectListItem
                             {
                                 Text = vila.Name,
@@ -49,11 +50,11 @@ namespace WhiteLagoon.Web.Controllers
 
             vmVilaNumber.VilaList ??= GetVitaList();
 
-            bool isVilaNumberExists = _db.VilaNumbers.Any(vn => vn.Vila_Number == vmVilaNumber.VilaNumber.Vila_Number);
+            bool isVilaNumberExists = _unitOfWork.VilaNumber.Any(vn => vn.Vila_Number == vmVilaNumber.VilaNumber.Vila_Number);
             if (ModelState.IsValid && !isVilaNumberExists)
             {
-                _db.VilaNumbers.Add(vmVilaNumber.VilaNumber);
-                _db.SaveChanges();
+                _unitOfWork.VilaNumber.Add(vmVilaNumber.VilaNumber);
+                _unitOfWork.SaveChanges();
                 this.ShowSuccess("Vila number created successfully.");
                 return RedirectToAction(nameof(Index));
             }
@@ -70,7 +71,7 @@ namespace WhiteLagoon.Web.Controllers
             VilaNumberViewModel vmVillaNumber = new VilaNumberViewModel
             {
                 VilaList = GetVitaList(),
-                VilaNumber = _db.VilaNumbers.FirstOrDefault(vila => vila.Vila_Number == vilaNumberId)
+                VilaNumber = _unitOfWork.VilaNumber.Get(vila => vila.Vila_Number == vilaNumberId)
             };
             if (vmVillaNumber.VilaNumber is null)
             {
@@ -89,8 +90,8 @@ namespace WhiteLagoon.Web.Controllers
             vmVilaNumber.VilaList ??= GetVitaList();
             if (ModelState.IsValid)
             {
-                _db.VilaNumbers.Update(vmVilaNumber.VilaNumber);
-                _db.SaveChanges();
+                _unitOfWork.VilaNumber.Update(vmVilaNumber.VilaNumber);
+                _unitOfWork.SaveChanges();
                 this.ShowSuccess("Vila number updated successfully.");
                 return RedirectToAction(nameof(Index));
             }
@@ -102,7 +103,7 @@ namespace WhiteLagoon.Web.Controllers
             VilaNumberViewModel vmVillaNumber = new VilaNumberViewModel
             {
                 VilaList = GetVitaList(),
-                VilaNumber = _db.VilaNumbers.FirstOrDefault(vila => vila.Vila_Number == vilaNumberId)!
+                VilaNumber = _unitOfWork.VilaNumber.Get(vila => vila.Vila_Number == vilaNumberId)!
             };
             return View(vmVillaNumber);
         }
@@ -110,15 +111,15 @@ namespace WhiteLagoon.Web.Controllers
         [HttpPost]
         public IActionResult Delete(VilaNumberViewModel vmVilaNumber)
         {
-            var dbVilaNumber = _db.VilaNumbers.FirstOrDefault(vilaNumber =>vilaNumber.Vila_Number == vmVilaNumber.VilaNumber.Vila_Number);
+            var dbVilaNumber = _unitOfWork.VilaNumber.Get(vilaNumber => vilaNumber.Vila_Number == vmVilaNumber.VilaNumber.Vila_Number);
             if (dbVilaNumber is null)
             {
                 this.ShowError("Vila number not found.");
                 return RedirectToAction(nameof(HomeController.Error), "Home");
             }
 
-            _db.VilaNumbers.Remove(dbVilaNumber);
-            _db.SaveChanges();
+            _unitOfWork.VilaNumber.Remove(dbVilaNumber);
+            _unitOfWork.SaveChanges();
 
             this.ShowSuccess($"Vila number {dbVilaNumber.Vila_Number} deleted successfully.");
             return RedirectToAction(nameof(Index));
