@@ -10,16 +10,36 @@ namespace WhiteLagoon.Infrastructure.Data
 {
     public class ApplicationDBContext : DbContext
     {
-        public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) 
+        public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options)
             : base(options)
         {
         }
 
         public DbSet<Vila> Vilas { get; set; }
 
+        public DbSet<VilaNumber> VilaNumbers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-             base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<VilaNumber>().HasData(
+                new VilaNumber
+                {
+                    Vila_Number = 101,
+                    VilaId = 1
+                },
+                new VilaNumber
+                {
+                    Vila_Number = 102,
+                    VilaId = 1
+                },
+                new VilaNumber
+                {
+                    Vila_Number = 103,
+                    VilaId = 1
+                }
+                );
         }
     }
 }

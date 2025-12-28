@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WhiteLagoon.Domain.Entities;
 using WhiteLagoon.Infrastructure.Data;
+using WhiteLagoon.Web.UIHelpers;
 
 namespace WhiteLagoon.Web.Controllers
 {
@@ -11,15 +12,6 @@ namespace WhiteLagoon.Web.Controllers
         public VilasController(ApplicationDBContext db)
         {
             _db = db;
-        }
-
-        private void ToastSuccess(string message)
-        {
-            TempData["SuccesMessage"] = message;
-        }
-        private void ToastError(string message)
-        {
-            TempData["ErrorMessage"] = message;
         }
 
         public IActionResult Index()
@@ -41,7 +33,7 @@ namespace WhiteLagoon.Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                ToastError("Error while creating Vila. Please try again.");
+                this.ShowError("Error while creating Vila. Please try again.");
                 return View();
             }
 
@@ -56,7 +48,7 @@ namespace WhiteLagoon.Web.Controllers
             var vilaFromDb = _db.Vilas.FirstOrDefault(vila => vila.Id == id);
             if (vilaFromDb is null)
             {
-                ToastError("Vila not found.");
+                this.ShowError("Vila not found.");
                 return RedirectToAction(nameof(HomeController.Error), "Home");
             }
 
@@ -71,11 +63,11 @@ namespace WhiteLagoon.Web.Controllers
                 _db.Vilas.Update(vila);
                 _db.SaveChanges();
 
-                ToastSuccess("Vila updated successfully.");
+                this.ShowSuccess("Vila updated successfully.");
                 return RedirectToAction(nameof(Index));
             }
 
-            ToastError("Error while updating Vila. Please try again.");
+            this.ShowError("Error while updating Vila. Please try again.");
             return View(vila);
         }
 
@@ -85,14 +77,14 @@ namespace WhiteLagoon.Web.Controllers
             var vilaFromDb = _db.Vilas.FirstOrDefault(vila => vila.Id == id);
             if (vilaFromDb is null)
             {
-                ToastError("Vila not found.");
+                this.ShowError("Vila not found.");
                 return RedirectToAction(nameof(HomeController.Error), "Home");
             }
 
             _db.Vilas.Remove(vilaFromDb);
             _db.SaveChanges();
 
-            ToastSuccess($"Vila {vilaFromDb.Name} deleted successfully.");
+            this.ShowSuccess($"Vila {vilaFromDb.Name} deleted successfully.");
             return RedirectToAction(nameof(Index));
         }
     }
