@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using WhiteLagoon.Domain.Entities;
@@ -24,6 +25,49 @@ namespace WhiteLagoon.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Vila>(vila =>
+            {
+                vila.HasKey(v => v.Id);
+                vila.Property(v => v.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                vila.Property(v => v.Description);
+                vila.Property(v => v.Occupancy);
+                vila.Property(v => v.Sqft);
+                vila.Ignore(x => x.Image);
+                vila.Property(v => v.ImageUrl);
+
+                vila.HasMany(v => v.Amenities)
+                    .WithOne(a => a.Vila)
+                    .HasForeignKey(f => f.VilaId)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<VilaNumber>(vilaNumber =>
+            {
+                vilaNumber.HasKey(v => v.Vila_Number);
+                vilaNumber.Property(v => v.Vila_Number).ValueGeneratedNever();
+                vilaNumber.Property(v => v.SpecialDetails);
+                vilaNumber.HasOne(v => v.Vila)
+                          .WithMany()
+                          .HasForeignKey(v => v.VilaId);
+
+            });
+
+            modelBuilder.Entity<Amenity>(amenity =>
+            {
+                amenity.HasKey(v => v.Id);
+                amenity.Property(v => v.Name).IsRequired();
+                amenity.Property(v => v.Description);
+
+                amenity.HasOne(a => a.Vila)
+                       .WithMany(v => v.Amenities)
+                       .HasForeignKey(f => f.VilaId)
+                       .IsRequired();
+            });
+
 
             modelBuilder.Entity<VilaNumber>().HasData(
                 new VilaNumber

@@ -17,9 +17,10 @@ namespace WhiteLagoon.Web.Controllers
 
         public IActionResult Index()
         {
+            var vilas = _unitOfWork.Villa.GetAll(includeProperties: new string[] { nameof(Vila.Amenities) });
             var vm = new ViewModels.HomeViewModel
             {
-                Vilas = _unitOfWork.Villa.GetAll(includeProperties: new string[] { nameof(Vila.Amenities)}),
+                Vilas = vilas,
                 CheckInDate = DateOnly.FromDateTime(DateTime.Now),
                 NumberOfNights = 1
             };

@@ -10,10 +10,8 @@ namespace WhiteLagoon.Domain.Entities
 {
     public class VilaNumber
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Vila_Number { get; set; } 
 
-        [ForeignKey(nameof(Vila))]
         public int VilaId { get; set; }
         public Vila Vila { get; set; }
 

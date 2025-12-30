@@ -13,9 +13,7 @@ namespace WhiteLagoon.Domain.Entities
     public class Vila
     {
         public int Id { get; set; }
-
-        [Required]
-        [MaxLength(50)]
+      
         public required string Name { get; set; }
 
         public string? Description { get; set; }
@@ -28,7 +26,6 @@ namespace WhiteLagoon.Domain.Entities
         [Range(1,10)]
         public int Occupancy { get; set; }
 
-        [NotMapped]
         public IFormFile? Image { get; set; }
 
         public string ImageUrl { get; set; }
@@ -38,6 +35,6 @@ namespace WhiteLagoon.Domain.Entities
         public DateTime? UpdatedDate { get; set; }
 
         [ValidateNever]
-        public IEnumerable<Amenity> Amenities { get; set; }
+        public IEnumerable<Amenity> Amenities { get; set; } = new List<Amenity>();
     }
 }
