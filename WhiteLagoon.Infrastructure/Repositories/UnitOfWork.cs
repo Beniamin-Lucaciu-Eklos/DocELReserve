@@ -17,11 +17,14 @@ namespace WhiteLagoon.Infrastructure.Repositories
             _db = db;
             Villa = new VilaRepository(db);
             VilaNumber = new VilaNumberRepository(db);
+            Amenity = new AmenityRepository(db);
         }
 
         public IVilaRepository Villa { get; private set; }
 
         public IVilaNumberRepository VilaNumber { get; private set; }
+
+        public IAmenityRepository Amenity { get; private set; }
 
         public void SaveChanges()
         {

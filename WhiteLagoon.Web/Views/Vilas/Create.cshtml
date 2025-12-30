@@ -44,7 +44,7 @@
 
                 <div class="form-floating py-1 col-12">
                     <input asp-for="ImageUrl" hidden class="form-control border shadow" />
-                    <input asp-for="Image" class="form-control border shadow m-2 px-4" />
+                    <input asp-for="Image" class="form-control border shadow m-2 px-4" accept="image/*" />
                     <label class="ms-2">Image Url</label>
                     <span asp-validation-for="ImageUrl" class="text-danger"></span>
                 </div>

@@ -46,7 +46,7 @@ namespace WhiteLagoon.Web.Controllers
             if (vila.Image is not null)
             {
                 var vilaImagePath = vila.Image.GetFullPath(_webHostEnvironment.WebRootPath, DefaultVilaFolderPath);
-                vila.Image.CopyTo(vilaImagePath);
+                vila.Image.Upload(vilaImagePath);
 
                 var fileName = vilaImagePath.GetFileNameFromFullPath();
                 vila.ImageUrl = FileHelper.CreateRootPath(DefaultVilaFolderPath, fileName);
@@ -82,7 +82,7 @@ namespace WhiteLagoon.Web.Controllers
                 if (vila.Image is not null)
                 {
                     var vilaImagePath = vila.Image.GetFullPath(_webHostEnvironment.WebRootPath, DefaultVilaFolderPath);
-                    vila.Image.CopyTo(vilaImagePath);
+                    vila.Image.Upload(vilaImagePath);
 
                     var fileName = vilaImagePath.GetFileNameFromFullPath();
                     vila.ImageUrl = FileHelper.CreateRootPath(DefaultVilaFolderPath, fileName);

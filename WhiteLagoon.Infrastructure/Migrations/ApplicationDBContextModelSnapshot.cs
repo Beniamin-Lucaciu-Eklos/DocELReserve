@@ -22,6 +22,32 @@ namespace WhiteLagoon.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("WhiteLagoon.Domain.Entities.Amenity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VilaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VilaId");
+
+                    b.ToTable("Amenities");
+                });
+
             modelBuilder.Entity("WhiteLagoon.Domain.Entities.Vila", b =>
                 {
                     b.Property<int>("Id")
@@ -95,6 +121,17 @@ namespace WhiteLagoon.Infrastructure.Migrations
                             Vila_Number = 103,
                             VilaId = 1
                         });
+                });
+
+            modelBuilder.Entity("WhiteLagoon.Domain.Entities.Amenity", b =>
+                {
+                    b.HasOne("WhiteLagoon.Domain.Entities.Vila", "Vila")
+                        .WithMany()
+                        .HasForeignKey("VilaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Vila");
                 });
 
             modelBuilder.Entity("WhiteLagoon.Domain.Entities.VilaNumber", b =>

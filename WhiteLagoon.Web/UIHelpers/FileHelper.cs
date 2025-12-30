@@ -23,7 +23,7 @@
 
         public static string GetFileNameFromFullPath(this string fullPath) => Path.GetFileName(fullPath);
 
-        public static void CopyTo(this IFormFile file, string filePath)
+        public static void Upload(this IFormFile file, string filePath)
         {
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
