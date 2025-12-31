@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace WhiteLagoon.Web.ViewModels
 {
@@ -24,5 +25,9 @@ namespace WhiteLagoon.Web.ViewModels
         public string PhoneNumber { get; set; }
 
         public string? RedirectUrl { get; set; }
+
+        public IEnumerable<SelectListItem>? RoleList { get; set; }
+
+        public string Role { get; set; }
     }
 }
