@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VilaManagement.Infrastructure\VilaManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\VilaManagement.Resources\VilaManagement.Resources.csproj" />
   </ItemGroup>
 
   <ItemGroup>

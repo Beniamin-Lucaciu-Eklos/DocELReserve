@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using VilaManagement.Application.Common;
 using VilaManagement.Application.Common.Interfaces;
 using VilaManagement.Domain.Entities;
 using VilaManagement.Infrastructure.Data;
@@ -9,6 +11,7 @@ using VilaManagement.Web.ViewModels;
 
 namespace VilaManagement.Web.Controllers
 {
+    [Authorize(Roles = AppUserRoles.AdminRole)]
     public class AmenityController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

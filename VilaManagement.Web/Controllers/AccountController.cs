@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.VisualBasic;
+using System.Threading.Tasks;
 using VilaManagement.Application.Common;
 using VilaManagement.Application.Common.Interfaces;
 using VilaManagement.Domain.Entities;
@@ -26,29 +28,20 @@ namespace VilaManagement.Web.Controllers
             _roleManager = roleManager;
         }
 
-        public IActionResult Login(string returnUrl = null)
+        public async Task<IActionResult> Register(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
-            LoginViewModel vmLogin = new LoginViewModel
-            {
-                RedirectUrl = returnUrl,
-            };
-
-            return View(vmLogin);
-        }
-
-        public async Task<IActionResult> Register()
-        {
-            bool adminRoleExists = await _roleManager.RoleExistsAsync(AspNetUserRoleConstants.AdminRole);
+            bool adminRoleExists = await _roleManager.RoleExistsAsync(AppUserRoles.AdminRole);
             if (!adminRoleExists)
             {
-                await _roleManager.CreateAsync(new IdentityRole(AspNetUserRoleConstants.AdminRole));
-                await _roleManager.CreateAsync(new IdentityRole(AspNetUserRoleConstants.UserRole));
+                await _roleManager.CreateAsync(new IdentityRole(AppUserRoles.AdminRole));
+                await _roleManager.CreateAsync(new IdentityRole(AppUserRoles.UserRole));
             }
 
             RegisterViewModel vmRegister = new RegisterViewModel
             {
-                RoleList = _roleManager.Roles.Select(x => new SelectListItem(x.Name, x.Id)).ToList(),
+                RoleList = _roleManager.Roles.Select(x => new SelectListItem(x.Name, x.Name)).ToList(),
+                RedirectUrl = returnUrl
             };
 
             return View(vmRegister);
@@ -64,7 +57,7 @@ namespace VilaManagement.Web.Controllers
                 PhoneNumber = vmRegister.PhoneNumber,
                 NormalizedEmail = vmRegister.Email.ToUpper(),
                 EmailConfirmed = true,
-                UserName = vmRegister.Name,
+                UserName = vmRegister.Email,
                 CreatedAt = DateTime.Now,
             };
 
@@ -74,7 +67,7 @@ namespace VilaManagement.Web.Controllers
                 var userRole = vmRegister.Role switch
                 {
                     string role when !string.IsNullOrWhiteSpace(role) => role,
-                    _ => AspNetUserRoleConstants.UserRole
+                    _ => AppUserRoles.UserRole
                 };
 
                 await _userManager.AddToRoleAsync(user, userRole);
@@ -94,6 +87,47 @@ namespace VilaManagement.Web.Controllers
             vmRegister.RoleList = _roleManager.Roles.Select(x => new SelectListItem(x.Name, x.Id)).ToList();
 
             return View(vmRegister);
+        }
+
+        public IActionResult Login(string returnUrl = null)
+        {
+            returnUrl ??= Url.Content("~/");
+            LoginViewModel vmLogin = new LoginViewModel
+            {
+                RedirectUrl = returnUrl,
+            };
+
+            return View(vmLogin);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel vmLogin)
+        {
+            if (!ModelState.IsValid)
+                return View(vmLogin);
+
+            var loginResult = await _signInManager.PasswordSignInAsync(vmLogin.Email, vmLogin.Password, vmLogin.RememberMe, false);
+
+            if (!loginResult.Succeeded)
+                ModelState.AddModelError("", "Invalid login");
+
+            return (vmLogin.RedirectUrl, loginResult.Succeeded) switch
+            {
+                (string url, bool success) when !string.IsNullOrWhiteSpace(url) && success => LocalRedirect(url),
+                (_, bool success) when success => RedirectToAction(nameof(HomeController.Index), "Home"),
+                (_, _) => View(vmLogin)
+            };
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

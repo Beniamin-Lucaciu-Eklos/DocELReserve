@@ -3,16 +3,21 @@ using Microsoft.AspNetCore.Mvc;
 using VilaManagement.Domain.Entities;
 using VilaManagement.Web.Controllers;
 using VilaManagement.Tests.Fixtures;
+using Microsoft.Extensions.Localization;
 
 namespace VilaManagement.Tests.Controllers
 {
     public class HomeControllerTests
     {
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+        private readonly Mock<IStringLocalizer<HomeController>> _mockLocalization;
 
         public HomeControllerTests()
         {
             _mockUnitOfWork = MockHelper.CreateMockUnitOfWork();
+            _mockLocalization = new Mock<IStringLocalizer<HomeController>>();
+            _mockLocalization.Setup(l => l[It.IsAny<string>(), It.IsAny<object[]>()])
+               .Returns((string key, object[] args) => new LocalizedString(key, key));
         }
 
         [Fact]
@@ -48,7 +53,7 @@ namespace VilaManagement.Tests.Controllers
             _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>()))
                 .Returns(vilas);
 
-            var controller = new HomeController(_mockUnitOfWork.Object);
+            var controller = new HomeController(_mockUnitOfWork.Object, _mockLocalization.Object);
 
             // Act
             var result = controller.Index();
@@ -67,7 +72,7 @@ namespace VilaManagement.Tests.Controllers
             _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>()))
                 .Returns(new List<Vila>());
 
-            var controller = new HomeController(_mockUnitOfWork.Object);
+            var controller = new HomeController(_mockUnitOfWork.Object, _mockLocalization.Object);
 
             // Act
             var result = controller.Index();
@@ -85,7 +90,7 @@ namespace VilaManagement.Tests.Controllers
             _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>()))
                 .Returns(new List<Vila>());
 
-            var controller = new HomeController(_mockUnitOfWork.Object);
+            var controller = new HomeController(_mockUnitOfWork.Object, _mockLocalization.Object);
 
             // Act
             var result = controller.Index();
@@ -124,7 +129,7 @@ namespace VilaManagement.Tests.Controllers
             _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>()))
                 .Returns(vilas);
 
-            var controller = new HomeController(_mockUnitOfWork.Object);
+            var controller = new HomeController(_mockUnitOfWork.Object, _mockLocalization.Object);
 
             // Act
             var result = controller.Index();
@@ -143,7 +148,7 @@ namespace VilaManagement.Tests.Controllers
             _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>()))
                 .Returns(new List<Vila>());
 
-            var controller = new HomeController(_mockUnitOfWork.Object);
+            var controller = new HomeController(_mockUnitOfWork.Object, _mockLocalization.Object);
             MockHelper.SetupControllerContext(controller);
 
             // Act
@@ -162,7 +167,7 @@ namespace VilaManagement.Tests.Controllers
             _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>()))
                 .Returns(new List<Vila>());
 
-            var controller = new HomeController(_mockUnitOfWork.Object);
+            var controller = new HomeController(_mockUnitOfWork.Object, _mockLocalization.Object);
 
             // Act
             controller.Index();
@@ -196,7 +201,7 @@ namespace VilaManagement.Tests.Controllers
             _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>()))
                 .Returns(vilas);
 
-            var controller = new HomeController(_mockUnitOfWork.Object);
+            var controller = new HomeController(_mockUnitOfWork.Object, _mockLocalization.Object);
 
             // Act
             var result = controller.Index();

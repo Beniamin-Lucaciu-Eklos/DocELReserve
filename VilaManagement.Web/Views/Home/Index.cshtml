@@ -1,11 +1,14 @@
-﻿@model HomeViewModel
+﻿@using Microsoft.Extensions.Localization
+@using VilaManagement.Resources.Controllers
+@inject IStringLocalizer<HomeController> Localizer
+@model HomeViewModel
+
 
 <div>
     <div id="carouselExampleIndicators" class="carousel slide">
         <div class="carousel-indicators">
             <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
             <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
         </div>
 
         <div class="carousel-inner">
@@ -19,12 +22,12 @@
 
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
+            <span class="visually-hidden">@Localizer["CarouselPreviousItem"]</span>
         </button>
 
         <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
+            <span class="visually-hidden">@Localizer["CarouselNextItem"]</span>
         </button>
     </div>
     <form method="post">
@@ -32,14 +35,14 @@
 
             <div class="col-12 col-md-5  offset-md-1 pl-2  pr-2 pr-md-0">
                 <div class="form-group">
-                    <label>Check In Date</label>
+                    <label>@Localizer["GeneralCheckInDate"]</label>
                     <input asp-for="@Model.CheckInDate" type="date" class="form-control" />
                 </div>
             </div>
 
             <div class="col-8 col-md-3 pl-2 pr-2">
                 <div class="form-group">
-                    <label>No. of nights</label>
+                    <label>@Localizer["GeneralNumberOfNights"]</label>
                     <select class="form-select" asp-for="@Model.NumberOfNights">
                         @for (var i = 1; i < 11; i++)
                         {
@@ -52,7 +55,7 @@
             <div class="col-4 col-md-2 pt-4 pr-2">
                 <div class="form-group">
                     <button type="button" class="btn btn-success btn-block">
-                        <i class="bi bi-search"></i>  &nbsp; Check Availability
+                        <i class="bi bi-search"></i>  &nbsp; @Localizer["GeneralCheckAvailability"]
                     </button>
 
                 </div>

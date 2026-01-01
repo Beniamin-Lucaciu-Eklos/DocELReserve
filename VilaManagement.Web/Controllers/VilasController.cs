@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VilaManagement.Application.Common.Interfaces;
 using VilaManagement.Application.IO;
 using VilaManagement.Domain.Entities;
@@ -7,6 +8,7 @@ using VilaManagement.Web.UIHelpers;
 
 namespace VilaManagement.Web.Controllers
 {
+    [Authorize]
     public class VilasController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

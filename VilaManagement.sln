@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VilaManagement.Infrastructu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VilaManagement.Tests", "VilaManagement.Tests\VilaManagement.Tests.csproj", "{D9E4A5B1-2F3C-4E8D-9A1B-6C5D7E8F9A0B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VilaManagement.Resources", "VilaManagement.Resources\VilaManagement.Resources.csproj", "{0D7A09B1-499D-4521-9A3B-5C41D47C3490}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{D9E4A5B1-2F3C-4E8D-9A1B-6C5D7E8F9A0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9E4A5B1-2F3C-4E8D-9A1B-6C5D7E8F9A0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9E4A5B1-2F3C-4E8D-9A1B-6C5D7E8F9A0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D7A09B1-499D-4521-9A3B-5C41D47C3490}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D7A09B1-499D-4521-9A3B-5C41D47C3490}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D7A09B1-499D-4521-9A3B-5C41D47C3490}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D7A09B1-499D-4521-9A3B-5C41D47C3490}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
