@@ -78,7 +78,6 @@ namespace VilaManagement.Tests.Fixtures
         {
             var httpContext = new DefaultHttpContext();
 
-            // Create a simple mock temp data dictionary that just stores values in memory
             var tempDataDictionary = new Dictionary<string, object>();
             var tempDataMock = new Mock<ITempDataDictionary>();
 
