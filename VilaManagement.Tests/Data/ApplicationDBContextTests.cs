@@ -199,11 +199,8 @@ namespace VilaManagement.Tests.Data
 
             // Act & Assert
             context.Vilas.Add(vila);
-            // Note: EF Core in-memory doesn't enforce required validation at SaveChanges by default
-            // This test validates that SaveChanges completes without error for a valid vila
-            context.SaveChanges();
-            
-            // Verify the entity was added
+            context.SaveChanges();            
+   
             var savedVila = context.Vilas.FirstOrDefault(x => x.Name == "Required Fields Test");
             Assert.NotNull(savedVila);
             Assert.Equal("Required Fields Test", savedVila.Name);
