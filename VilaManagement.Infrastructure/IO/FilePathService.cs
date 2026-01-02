@@ -10,6 +10,13 @@ namespace VilaManagement.Infrastructure.IO
 {
     public class FilePathService : IFilePathService
     {
+        public string CreateRelativePath(string rootPath, string path)
+        {
+            var existingPath = CreateRootPath(rootPath, path);
+            existingPath = existingPath.Replace(@"\", "/");
+            return $"~/{existingPath}";
+
+        }
         public string CreateRootPath(string rootPath, string path)
         {
             return Path.Combine(rootPath, path);

@@ -54,7 +54,7 @@ namespace VilaManagement.Web.Controllers
                 _svcfilePath.Upload(vila.Image, vilaImagePath);
 
                 var fileName = _svcfilePath.GetFileNameFromFullPath(vilaImagePath);
-                vila.ImageUrl = _svcfilePath.CreateRootPath(FileStorageConstants.VilaImagesFolderPath, fileName);
+                vila.ImageUrl =  _svcfilePath.CreateRelativePath(FileStorageConstants.VilaImagesFolderPath, fileName);
             }
             else
                 vila.ImageUrl = FileStorageConstants.NoImageVilaPlaceHolder;
@@ -90,7 +90,7 @@ namespace VilaManagement.Web.Controllers
                     _svcfilePath.Upload(vila.Image, vilaImagePath);
 
                     var fileName = _svcfilePath.GetFileNameFromFullPath(vilaImagePath);
-                    vila.ImageUrl = _svcfilePath.CreateRootPath(FileStorageConstants.VilaImagesFolderPath, fileName);
+                    vila.ImageUrl = _svcfilePath.CreateRelativePath(FileStorageConstants.VilaImagesFolderPath, fileName);
                 }
                 else
                     vila.ImageUrl = FileStorageConstants.NoImageVilaPlaceHolder;
@@ -110,7 +110,8 @@ namespace VilaManagement.Web.Controllers
         {
             if (vila.ImageUrl is not null)
             {
-                var oldImage = Path.Combine(_webHostEnvironment.WebRootPath, vila.ImageUrl.TrimStart('\\'));
+                vila.ImageUrl = vila.ImageUrl.Replace("~/", "").Replace("/", "\\");
+                var oldImage = Path.Combine(_webHostEnvironment.WebRootPath, vila.ImageUrl);
                 _svcfilePath.Delete(oldImage);
             }
         }

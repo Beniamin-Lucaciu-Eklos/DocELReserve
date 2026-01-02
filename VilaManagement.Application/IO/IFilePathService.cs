@@ -9,6 +9,8 @@ namespace VilaManagement.Application.IO
 {
     public interface IFilePathService
     {
+        string CreateRelativePath(string rootPath, string path);
+
         string CreateRootPath(string rootPath, string path);
 
         string GetFullPath(IFormFile file, string rootPath, string folderPath);
