@@ -8,22 +8,31 @@
 @inject IOptions<RequestLocalizationOptions> LocOptions
 
 @{
-    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+
     var cultureItems = LocOptions.Value.SupportedUICultures
         .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName })
         .ToList();
     var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "~/" : $"~{Context.Request.Path.Value}";
+
+    var cultureCookie = Context.Request.Cookies[CookieRequestCultureProvider.DefaultCookieName];
+    var selectedCulture = "en-US";
+    if (!string.IsNullOrEmpty(cultureCookie))
+    {
+        var requestCulture = CookieRequestCultureProvider.ParseCookieValue(cultureCookie);
+        selectedCulture = requestCulture.Cultures[0].Value ?? "";
+    }
 }
 
-<div title="@Localizer["Request culture provider:"] @requestCulture?.Provider?.GetType().Name">
+<div>
     <form id="selectLanguage" asp-controller="Home"
-                              asp-action="SetLanguage" 
-                              asp-route-returnUrl="@returnUrl"
+          asp-action="SetLanguage"
+          asp-route-returnUrl="@returnUrl"
           method="post" class="form-horizontal" role="form">
-        <label asp-for="@requestCulture.RequestCulture.UICulture.Name">@Localizer["Language:"]</label>
+          <span hidden>@selectedCulture</span>
+
         <select name="culture"
-            onchange="this.form.submit();"
-            asp-for="@requestCulture.RequestCulture.UICulture.Name" asp-items="cultureItems">
+                onchange="this.form.submit();"
+                asp-for="@selectedCulture" asp-items="cultureItems">
         </select>
     </form>
 </div>

@@ -1,3 +1,4 @@
+using Azure.Core.Pipeline;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -6,6 +7,7 @@ using System.Diagnostics;
 using VilaManagement.Application.Common.Interfaces;
 using VilaManagement.Domain.Entities;
 using VilaManagement.Web.Models;
+using VilaManagement.Web.ViewModels;
 
 namespace VilaManagement.Web.Controllers
 {
@@ -37,6 +39,38 @@ namespace VilaManagement.Web.Controllers
             return View(vm);
         }
 
+        [HttpPost]
+        public IActionResult Index(HomeViewModel vmHome)
+        {
+            var vilas = _unitOfWork.Villa.GetAll(includeProperties: new string[] { nameof(Vila.Amenities) });
+            foreach (var vila in vilas)
+                vila.IsAvailable = vila.Id % 2 != 0;
+
+            vmHome.Vilas = vilas;
+
+
+            return View(vmHome);
+        }
+
+        public IActionResult GetVilasByDate(int numberOfNights, DateOnly checkInDate)
+        {
+            var vilas = _unitOfWork.Villa.GetAll(includeProperties: new string[] { nameof(Vila.Amenities) });
+            foreach (var vila in vilas)
+            {
+                if (vila.Id % 2 == 0)
+                    vila.IsAvailable = false;
+            }
+
+            HomeViewModel vmHome = new()
+            {
+                NumberOfNights = numberOfNights,
+                CheckInDate = checkInDate,
+                Vilas = vilas,
+            };
+
+            return PartialView("_VilaList", vmHome);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
@@ -49,10 +83,8 @@ namespace VilaManagement.Web.Controllers
             Response.Cookies.Append(
         CookieRequestCultureProvider.DefaultCookieName,
         CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
-        new CookieOptions { Expires = DateTimeOffset.UtcNow.AddSeconds(10) }
+        new CookieOptions { Expires = DateTimeOffset.UtcNow.AddMonths(1) }
     );
-
-
             return LocalRedirect(returnUrl);
         }
     }

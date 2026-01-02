@@ -23,6 +23,10 @@ builder.Services.AddControllersWithViews()
         //options.DataAnnotationLocalizerProvider = (type, factory) =>
         //          factory.Create(typeof(ValidationMessages));
     });
+builder.Services.AddLocalization(options =>
+{
+    options.ResourcesPath = "";
+});
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -49,8 +53,8 @@ builder.Services.AddSingleton<IFilePathService, FilePathService>();
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-    var supportedCultures = new[] { new CultureInfo("en"), new CultureInfo("ro"), };
-    options.DefaultRequestCulture = new RequestCulture(culture: "en", uiCulture: "en");
+    var supportedCultures = new[] { new CultureInfo("en-US"), new CultureInfo("ro-RO"), };
+    options.DefaultRequestCulture = new RequestCulture(culture: "en-US", uiCulture: "en-US");
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
 });
