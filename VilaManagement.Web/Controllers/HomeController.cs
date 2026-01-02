@@ -15,15 +15,12 @@ namespace VilaManagement.Web.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IStringLocalizer<HomeController> _localizer;
-        private readonly IOptions<RequestLocalizationOptions> _locaOptions;
 
         public HomeController(IUnitOfWork unitOfWork,
-            IStringLocalizer<HomeController> localizer,
-            IOptions<RequestLocalizationOptions> locOptions)
+            IStringLocalizer<HomeController> localizer)
         {
             _unitOfWork = unitOfWork;
             _localizer = localizer;
-            _locaOptions = locOptions;
         }
 
         public IActionResult Index()
@@ -40,18 +37,6 @@ namespace VilaManagement.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index(HomeViewModel vmHome)
-        {
-            var vilas = _unitOfWork.Villa.GetAll(includeProperties: new string[] { nameof(Vila.Amenities) });
-            foreach (var vila in vilas)
-                vila.IsAvailable = vila.Id % 2 != 0;
-
-            vmHome.Vilas = vilas;
-
-
-            return View(vmHome);
-        }
-
         public IActionResult GetVilasByDate(int numberOfNights, DateOnly checkInDate)
         {
             var vilas = _unitOfWork.Villa.GetAll(includeProperties: new string[] { nameof(Vila.Amenities) });

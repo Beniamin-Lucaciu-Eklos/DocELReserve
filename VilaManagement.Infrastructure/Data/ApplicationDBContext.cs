@@ -25,6 +25,8 @@ namespace VilaManagement.Infrastructure.Data
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
+        public DbSet<Booking> Bookings { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -34,6 +36,8 @@ namespace VilaManagement.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new VilaNumberConfiguration());
 
             modelBuilder.ApplyConfiguration(new AmenityConfiguration());
+
+            modelBuilder.ApplyConfiguration(new BookingConfiguration());
         }
     }
 }
