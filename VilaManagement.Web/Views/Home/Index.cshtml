@@ -1,6 +1,4 @@
-﻿@using Microsoft.Extensions.Localization
-@using VilaManagement.Resources.Resources
-@inject IStringLocalizer<ClientResources> Localizer
+﻿@inject IStringLocalizer<HomeController> Localizer
 @model HomeViewModel
 
 <div>
@@ -33,7 +31,6 @@
 
     <form method="post"
           asp-action="GetVillasByDate">
-        <!--id din _vilaList partial-->
 
         <div class="row p-0 mx-0 py-4">
             <div class="col-12 col-md-5  offset-md-1 pl-2  pr-2 pr-md-0">

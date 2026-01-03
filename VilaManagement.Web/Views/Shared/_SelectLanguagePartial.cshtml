@@ -8,31 +8,25 @@
 @inject IOptions<RequestLocalizationOptions> LocOptions
 
 @{
-
-    var cultureItems = LocOptions.Value.SupportedUICultures
-        .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName })
-        .ToList();
+     var cultureItems = new List<SelectListItem>{
+         new SelectListItem { Value = "en-US", Text = "en-US" },
+         new SelectListItem { Value = "ro-RO", Text = "ro-RO" }
+     };
     var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "~/" : $"~{Context.Request.Path.Value}";
 
     var cultureCookie = Context.Request.Cookies[CookieRequestCultureProvider.DefaultCookieName];
-    var selectedCulture = "en-US";
+    string culture = null;
     if (!string.IsNullOrEmpty(cultureCookie))
     {
         var requestCulture = CookieRequestCultureProvider.ParseCookieValue(cultureCookie);
-        selectedCulture = requestCulture.Cultures[0].Value ?? "";
+        culture = requestCulture.Cultures[0].Value ?? "";
     }
 }
 
 <div>
-    <form id="selectLanguage" asp-controller="Home"
-          asp-action="SetLanguage"
-          asp-route-returnUrl="@returnUrl"
-          method="post" class="form-horizontal" role="form">
-          <span hidden>@selectedCulture</span>
-
-        <select name="culture"
-                onchange="this.form.submit();"
-                asp-for="@selectedCulture" asp-items="cultureItems">
+    <form asp-controller="Home" asp-action="SetLanguage" method="post" class="d-flex">
+        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+        <select asp-for="@culture" asp-items="cultureItems" onchange="this.form.submit()" class="form-select form-select-sm">
         </select>
     </form>
 </div>
