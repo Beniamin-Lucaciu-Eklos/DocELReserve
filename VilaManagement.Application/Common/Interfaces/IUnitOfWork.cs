@@ -16,6 +16,8 @@ namespace VilaManagement.Application.Common.Interfaces
 
         IBookingRepository Booking { get; }
 
+        IApplicationUserRepository ApplicationUser { get; }
+
         void SaveChanges();
     }
 }

@@ -19,6 +19,7 @@ namespace VilaManagement.Infrastructure.Repositories
             VilaNumber = new VilaNumberRepository(db);
             Amenity = new AmenityRepository(db);
             Booking = new BookingRepository(db);
+            ApplicationUser = new ApplicationUserRepository(db);
         }
 
         public IVilaRepository Villa { get; private set; }
@@ -28,6 +29,8 @@ namespace VilaManagement.Infrastructure.Repositories
         public IAmenityRepository Amenity { get; private set; }
 
         public IBookingRepository Booking { get; private set; }
+
+        public IApplicationUserRepository ApplicationUser { get; private set; }
 
         public void SaveChanges()
         {
