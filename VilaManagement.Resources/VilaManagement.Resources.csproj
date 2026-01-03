@@ -4,15 +4,41 @@
 		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<SatelliteResourceLanguages>en-US;ro-Ro</SatelliteResourceLanguages>
+		<RootNamespace>VilaManagement.Resources</RootNamespace>
+		<NeutralLanguage>en-US</NeutralLanguage>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Folder Include="Controllers\" />
 		<Folder Include="Shared\" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Localization" Version="10.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Views\Home\IndexResource.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>IndexResource.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="Views\Home\IndexResource.en-US.resx">
+		  <Generator>PublicResXFileCodeGenerator</Generator>
+		  <LogicalName>VilaManagement.Resources.Views.Home.IndexResource.en-US.resources</LogicalName>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Views\Home\IndexResource.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>IndexResource.Designer.cs</LastGenOutput>
+			<LogicalName>VilaManagement.Resources.Views.Home.IndexResource.resources</LogicalName>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Views\Home\IndexResource.ro-RO.resx">
+		  <Generator>PublicResXFileCodeGenerator</Generator>
+		  <LogicalName>VilaManagement.Resources.Views.Home.IndexResource.ro-RO.resources</LogicalName>
+		</EmbeddedResource>
 	</ItemGroup>
 
 </Project>

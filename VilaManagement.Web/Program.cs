@@ -14,7 +14,6 @@ using VilaManagement.Infrastructure.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddLocalization();
 
 builder.Services.AddControllersWithViews()
     .AddViewLocalization()
@@ -25,7 +24,7 @@ builder.Services.AddControllersWithViews()
     });
 builder.Services.AddLocalization(options =>
 {
-    options.ResourcesPath = "";
+    options.ResourcesPath = "Resources";
 });
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
