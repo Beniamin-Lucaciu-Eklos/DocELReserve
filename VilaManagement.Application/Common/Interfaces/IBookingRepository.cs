@@ -9,6 +9,8 @@ using VilaManagement.Domain.Entities;
 namespace VilaManagement.Application.Common.Interfaces
 {
     public interface IBookingRepository : IRepository<Booking>
-    {       
+    {
+        void UpdateOrderStatus(int bookingId, string orderStatus);
+        void UpdateStripePaymentId(int bookingId, string sessionID, string paymentIntentId);
     }
 }

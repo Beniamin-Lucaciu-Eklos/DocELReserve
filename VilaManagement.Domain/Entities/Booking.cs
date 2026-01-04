@@ -22,7 +22,7 @@ namespace VilaManagement.Domain.Entities
 
         public int Nights { get; set; }
 
-        public string? Status { get; set; }
+        public string? OrderStatus { get; set; }
 
         public DateTime BookingDate { get; set; }
 

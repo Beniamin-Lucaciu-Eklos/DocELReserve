@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
+using Stripe;
 using System.Globalization;
 using VilaManagement.Application.Common.Interfaces;
 using VilaManagement.Application.IO;
@@ -48,6 +49,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<IFilePathService, FilePathService>();
 
 var app = builder.Build();
+
+StripeConfiguration.ApiKey = app.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
 var supportedCultures = new[]
 {
