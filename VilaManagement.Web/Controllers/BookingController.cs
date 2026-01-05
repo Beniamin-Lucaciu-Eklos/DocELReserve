@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe.Checkout;
 using System.Security.Claims;
 using VilaManagement.Application.Common;
 using VilaManagement.Application.Common.Interfaces;
@@ -76,20 +77,64 @@ namespace VilaManagement.Web.Controllers
 
             //var domain = Request.Scheme + "://" + Request.Host.Value + "/";
 
+            //var options = new SessionCreateOptions
+            //{
+            //    LineItems = new List<SessionLineItemOptions>(),
+            //    Mode = "payment",
+            //    SuccessUrl = $"{domain}booking/confirmation?booking={booking.Id}.html",
+            //    CancelUrl = $"{domain}booking/finalize?vilaId={vila.Id}&checkInDate={booking.CheckInDate}&numberOfNights={booking.Nights} .html",
+            //};
+            //options.LineItems.Add(new SessionLineItemOptions
+            //{
+            //    PriceData = new SessionLineItemPriceDataOptions
+            //    {
+            //        UnitAmount = (long)booking.TotalCost * 100,
+            //        Currency = "usd",
+            //        ProductData = new SessionLineItemPriceDataProductDataOptions
+            //        {
+            //            Name = vila.Name,
+            //            //       Images = new List<string> { domain + vila.ImageUrl }
+            //        },
+            //    },
+            //    Quantity = 1,
+            //});
+
+            //var service = new SessionService();
+            //Session session = service.Create(options);
+
+            //_unitOfWork.Booking.UpdateStripePaymentId(booking.Id, session.Id, session.PaymentIntentId);
+            //_unitOfWork.SaveChanges();
+
+            //Response.Headers.Add("Location", session.Url);
+            //return new StatusCodeResult(303);
+
+            return RedirectToAction(nameof(Confirmation), new { bookingId = booking.Id });
+
             //var options = _paymentService.CreateStripeSessionOptions(booking, villa, domain);
 
             //var session = _paymentService.CreateStripeSession(options);
 
             //_unitOfWork.Booking.UpdateStripePaymentId(booking.Id, session.Id, session.PaymentIntentId);
-            //Response.Headers.Add("Location", session.Url);
-            //return new StatusCodeResult(303);
 
-            return RedirectToAction(nameof(Confirmation), new { bookingId = booking.Id });
         }
 
         [Authorize]
         public IActionResult Confirmation(int bookingId)
         {
+            var booking = _unitOfWork.Booking.Get(b => b.Id == bookingId, new string[] { nameof(Booking.Vila), nameof(Booking.User) });
+            if (booking is Booking { OrderStatus: BookingOrderStatus.Pending })
+            {
+                //    var service = new SessionService();
+
+                //    var session = service.Get(booking.StripeSessionId);
+                //    if (session.PaymentStatus == "paid")
+                //    {
+                //        _unitOfWork.Booking.UpdateOrderStatus(bookingId, BookingOrderStatus.Approved);
+                //        _unitOfWork.Booking.UpdateStripePaymentId(bookingId, session.Id, session.PaymentIntentId);
+                //        _unitOfWork.SaveChanges();
+                //    }
+            }
+
             return View(bookingId);
         }
 

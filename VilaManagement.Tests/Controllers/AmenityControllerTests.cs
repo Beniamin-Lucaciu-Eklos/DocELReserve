@@ -26,7 +26,7 @@ namespace VilaManagement.Tests.Controllers
                 new Amenity { Id = 2, Name = "Pool", Description = "Swimming Pool", VilaId = 1 }
             };
 
-            _mockUnitOfWork.Setup(x => x.Amenity.GetAll(null, It.IsAny<string[]>()))
+            _mockUnitOfWork.Setup(x => x.Amenity.GetAll(null, It.IsAny<string[]>(), It.IsAny<bool>()))
                 .Returns(amenities);
 
             var controller = new AmenityController(_mockUnitOfWork.Object);
@@ -50,7 +50,7 @@ namespace VilaManagement.Tests.Controllers
                 new Vila { Id = 2, Name = "Vila 2", Description = "Desc", Price = 60000, Sqft = 1200, Occupancy = 5, ImageUrl = "2.jpg" }
             };
 
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, It.IsAny<bool>()))
                 .Returns(vilas);
 
             var controller = new AmenityController(_mockUnitOfWork.Object);
@@ -78,7 +78,7 @@ namespace VilaManagement.Tests.Controllers
                 .Returns(false);
             _mockUnitOfWork.Setup(x => x.Amenity.Add(It.IsAny<Amenity>()));
             _mockUnitOfWork.Setup(x => x.SaveChanges());
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, It.IsAny<bool>()))
                 .Returns(new List<Vila>());
 
             var controller = new AmenityController(_mockUnitOfWork.Object);
@@ -104,7 +104,7 @@ namespace VilaManagement.Tests.Controllers
 
             _mockUnitOfWork.Setup(x => x.Amenity.Any(It.IsAny<System.Linq.Expressions.Expression<Func<Amenity, bool>>>()))
                 .Returns(true);
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, It.IsAny<bool>()))
                 .Returns(new List<Vila>());
 
             var controller = new AmenityController(_mockUnitOfWork.Object);
@@ -128,9 +128,9 @@ namespace VilaManagement.Tests.Controllers
                 new Vila { Id = 1, Name = "Vila 1", Description = "Desc", Price = 50000, Sqft = 1000, Occupancy = 4, ImageUrl = "1.jpg" }
             };
 
-            _mockUnitOfWork.Setup(x => x.Amenity.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Amenity, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.Amenity.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Amenity, bool>>>(), null, It.IsAny<bool>()))
                 .Returns(amenity);
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, It.IsAny<bool>()))
                 .Returns(vilas);
 
             var controller = new AmenityController(_mockUnitOfWork.Object);
@@ -148,9 +148,9 @@ namespace VilaManagement.Tests.Controllers
         public void Edit_GetRequest_InvalidId_ShouldRedirectToError()
         {
             // Arrange
-            _mockUnitOfWork.Setup(x => x.Amenity.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Amenity, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.Amenity.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Amenity, bool>>>(), null, It.IsAny<bool>()))
                 .Returns((Amenity)null);
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, It.IsAny<bool>()))
                 .Returns(new List<Vila>());
 
             var controller = new AmenityController(_mockUnitOfWork.Object);
@@ -176,7 +176,7 @@ namespace VilaManagement.Tests.Controllers
 
             _mockUnitOfWork.Setup(x => x.Amenity.Update(It.IsAny<Amenity>()));
             _mockUnitOfWork.Setup(x => x.SaveChanges());
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, It.IsAny<bool>()))
                 .Returns(new List<Vila>());
 
             var controller = new AmenityController(_mockUnitOfWork.Object);
@@ -200,9 +200,9 @@ namespace VilaManagement.Tests.Controllers
                 new Vila { Id = 1, Name = "Vila 1", Description = "Desc", Price = 50000, Sqft = 1000, Occupancy = 4, ImageUrl = "1.jpg" }
             };
 
-            _mockUnitOfWork.Setup(x => x.Amenity.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Amenity, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.Amenity.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Amenity, bool>>>(), null, It.IsAny<bool>()))
                 .Returns(amenity);
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, It.IsAny<bool>()))
                 .Returns(vilas);
 
             var controller = new AmenityController(_mockUnitOfWork.Object);
@@ -227,11 +227,11 @@ namespace VilaManagement.Tests.Controllers
 
             var amenityToDelete = new Amenity { Id = 1, Name = "WiFi", Description = "Free WiFi", VilaId = 1 };
 
-            _mockUnitOfWork.Setup(x => x.Amenity.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Amenity, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.Amenity.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Amenity, bool>>>(), null, It.IsAny<bool>()))
                 .Returns(amenityToDelete);
             _mockUnitOfWork.Setup(x => x.Amenity.Remove(It.IsAny<Amenity>()));
             _mockUnitOfWork.Setup(x => x.SaveChanges());
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, It.IsAny<bool>()))
                 .Returns(new List<Vila>());
 
             var controller = new AmenityController(_mockUnitOfWork.Object);
@@ -256,9 +256,9 @@ namespace VilaManagement.Tests.Controllers
                 VilaList = new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>()
             };
 
-            _mockUnitOfWork.Setup(x => x.Amenity.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Amenity, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.Amenity.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Amenity, bool>>>(), null, It.IsAny<bool>()))
                 .Returns((Amenity)null);
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, It.IsAny<bool>()))
                 .Returns(new List<Vila>());
 
             var controller = new AmenityController(_mockUnitOfWork.Object);

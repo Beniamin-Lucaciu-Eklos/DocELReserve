@@ -1,3 +1,8 @@
-﻿@{
+﻿@if (User.IsInRole(VilaManagement.Application.Common.AppUserRoles.AdminRole))
+{
+    Layout = "_LayoutAdmin";
+}
+else
+{
     Layout = "_Layout";
 }

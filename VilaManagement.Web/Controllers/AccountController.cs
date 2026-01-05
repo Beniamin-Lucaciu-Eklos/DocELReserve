@@ -111,6 +111,13 @@ namespace VilaManagement.Web.Controllers
             if (!loginResult.Succeeded)
                 ModelState.AddModelError("", "Invalid login");
 
+            if (loginResult.Succeeded
+                && await _userManager.FindByEmailAsync(vmLogin.Email) is ApplicationUser u
+                && await _userManager.IsInRoleAsync(u, AppUserRoles.AdminRole))
+            {
+                return RedirectToAction(nameof(DashboardController.Index), "Dashboard");
+            }
+
             return (vmLogin.RedirectUrl, loginResult.Succeeded) switch
             {
                 (string url, bool success) when !string.IsNullOrWhiteSpace(url) && success => LocalRedirect(url),

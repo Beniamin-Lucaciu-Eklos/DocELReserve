@@ -22,9 +22,16 @@ namespace VilaManagement.Infrastructure.Repositories
             _dbSet = _db.Set<T>();
         }
 
-        private IQueryable<T> GetQuery(Expression<Func<T, bool>> filter, string[] includeProperties)
+        private IQueryable<T> GetQuery(Expression<Func<T, bool>> filter, string[] includeProperties, bool tracked = false)
         {
             IQueryable<T> query = _dbSet;
+            if (tracked)
+            {
+                query = _dbSet;
+            }
+            else
+                query = _dbSet.AsNoTracking();
+
             if (filter is not null)
             {
                 query = query.Where(filter);
@@ -45,9 +52,9 @@ namespace VilaManagement.Infrastructure.Repositories
             _dbSet.Add(entity);
         }
 
-        public T Get(Expression<Func<T, bool>> filter = null, string[] includedProperties = null)
+        public T Get(Expression<Func<T, bool>> filter = null, string[] includedProperties = null, bool tracked = false)
         {
-            IQueryable<T> query = GetQuery(filter, includedProperties);
+            IQueryable<T> query = GetQuery(filter, includedProperties, tracked);
             return query.FirstOrDefault();
         }
 
@@ -56,9 +63,9 @@ namespace VilaManagement.Infrastructure.Repositories
             return _dbSet.Any(filter);
         }
 
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>> filter = null, string[] includeProperties = null)
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>> filter = null, string[] includeProperties = null, bool tracked = false)
         {
-            IQueryable<T> query = GetQuery(filter, includeProperties);
+            IQueryable<T> query = GetQuery(filter, includeProperties, tracked);
             return query.ToList();
         }
 
