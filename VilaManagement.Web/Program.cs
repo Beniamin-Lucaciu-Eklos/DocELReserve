@@ -8,6 +8,7 @@ using Stripe;
 using System.Globalization;
 using VilaManagement.Application.Common.Interfaces;
 using VilaManagement.Application.IO;
+using VilaManagement.Application.Services;
 using VilaManagement.Domain.Entities;
 using VilaManagement.Infrastructure.Data;
 using VilaManagement.Infrastructure.IO;
@@ -45,12 +46,13 @@ builder.Services.Configure<IdentityOptions>(option =>
 
 //add services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+builder.Services.AddScoped<IVilaService, VilaService>();
+builder.Services.AddScoped<IVilaNumberService, VilaNumberService>();
 builder.Services.AddSingleton<IFilePathService, FilePathService>();
 
 var app = builder.Build();
 
-StripeConfiguration.ApiKey = app.Configuration.GetSection("Stripe:SecretKey").Get<string>();
+//StripeConfiguration.ApiKey = app.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
 var supportedCultures = new[]
 {

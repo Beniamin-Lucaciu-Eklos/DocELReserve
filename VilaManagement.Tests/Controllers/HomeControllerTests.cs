@@ -50,7 +50,7 @@ namespace VilaManagement.Tests.Controllers
                 }
             };
 
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>()))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>(), false))
                 .Returns(vilas);
 
             var controller = new HomeController(_mockUnitOfWork.Object, _mockLocalization.Object);
@@ -69,7 +69,7 @@ namespace VilaManagement.Tests.Controllers
         public void Index_WithNoVilas_ShouldReturnEmptyList()
         {
             // Arrange
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>()))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>(), false))
                 .Returns(new List<Vila>());
 
             var controller = new HomeController(_mockUnitOfWork.Object, _mockLocalization.Object);
@@ -87,7 +87,7 @@ namespace VilaManagement.Tests.Controllers
         public void Index_ShouldSetCheckInDateToToday()
         {
             // Arrange
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>()))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>(), false))
                 .Returns(new List<Vila>());
 
             var controller = new HomeController(_mockUnitOfWork.Object, _mockLocalization.Object);
@@ -126,7 +126,7 @@ namespace VilaManagement.Tests.Controllers
                 }
             };
 
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>()))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>(), false))
                 .Returns(vilas);
 
             var controller = new HomeController(_mockUnitOfWork.Object, _mockLocalization.Object);
@@ -145,7 +145,7 @@ namespace VilaManagement.Tests.Controllers
         public void Error_ShouldReturnErrorView()
         {
             // Arrange
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>()))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>(), false))
                 .Returns(new List<Vila>());
 
             var controller = new HomeController(_mockUnitOfWork.Object, _mockLocalization.Object);
@@ -164,7 +164,7 @@ namespace VilaManagement.Tests.Controllers
         public void Index_ShouldCallVillaGetAllWithAmenitiesIncluded()
         {
             // Arrange
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>()))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>(), false))
                 .Returns(new List<Vila>());
 
             var controller = new HomeController(_mockUnitOfWork.Object, _mockLocalization.Object);
@@ -174,7 +174,7 @@ namespace VilaManagement.Tests.Controllers
 
             // Assert
             _mockUnitOfWork.Verify(
-                x => x.Villa.GetAll(null, It.IsAny<string[]>()),
+                x => x.Villa.GetAll(null, It.IsAny<string[]>(), false),
                 Times.Once);
         }
 
@@ -198,7 +198,7 @@ namespace VilaManagement.Tests.Controllers
                 });
             }
 
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>()))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, It.IsAny<string[]>(), false))
                 .Returns(vilas);
 
             var controller = new HomeController(_mockUnitOfWork.Object, _mockLocalization.Object);

@@ -1,19 +1,31 @@
-using Moq;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
+using VilaManagement.Application.IO;
+using VilaManagement.Application.Services;
 using VilaManagement.Domain.Entities;
+using VilaManagement.Tests.Fixtures;
 using VilaManagement.Web.Controllers;
 using VilaManagement.Web.ViewModels;
-using VilaManagement.Tests.Fixtures;
 
 namespace VilaManagement.Tests.Controllers
 {
     public class VilaNumberControllerTests
     {
+        private readonly Mock<IFilePathService> _mockfilePathService;
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+        private readonly Mock<IWebHostEnvironment> _mockWebHostEnvironment;
+        private readonly Mock<IVilaService> _mockVilaService;
+        private readonly Mock<IVilaNumberService> _mockVilaNumberService;
 
         public VilaNumberControllerTests()
         {
+            _mockfilePathService = MockHelper.CreateFilePathService();
             _mockUnitOfWork = MockHelper.CreateMockUnitOfWork();
+            _mockWebHostEnvironment = MockHelper.CreateMockWebHostEnviroment();
+            _mockVilaService = MockHelper.CreateMockVilaService(_mockUnitOfWork, _mockWebHostEnvironment, _mockfilePathService);
+
+            _mockVilaNumberService = MockHelper.CreateMockVilaNumberService(_mockUnitOfWork);
+            
         }
 
         [Fact]
@@ -26,10 +38,10 @@ namespace VilaManagement.Tests.Controllers
                 new VilaNumber { Vila_Number = 102, VilaId = 1, SpecialDetails = "First Floor" }
             };
 
-            _mockUnitOfWork.Setup(x => x.VilaNumber.GetAll(null, It.IsAny<string[]>()))
+            _mockUnitOfWork.Setup(x => x.VilaNumber.GetAll(null, It.IsAny<string[]>(), false))
                 .Returns(vilaNumbers);
 
-            var controller = new VilaNumberController(_mockUnitOfWork.Object);
+            var controller = new VilaNumberController(_mockVilaNumberService.Object, _mockVilaService.Object);
 
             // Act
             var result = controller.Index();
@@ -50,10 +62,10 @@ namespace VilaManagement.Tests.Controllers
                 new Vila { Id = 2, Name = "Vila 2", Description = "Desc", Price = 60000, Sqft = 1200, Occupancy = 5, ImageUrl = "2.jpg" }
             };
 
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, false))
                 .Returns(vilas);
 
-            var controller = new VilaNumberController(_mockUnitOfWork.Object);
+            var controller = new VilaNumberController(_mockVilaNumberService.Object, _mockVilaService.Object);
 
             // Act
             var result = controller.Create();
@@ -78,10 +90,10 @@ namespace VilaManagement.Tests.Controllers
                 .Returns(false);
             _mockUnitOfWork.Setup(x => x.VilaNumber.Add(It.IsAny<VilaNumber>()));
             _mockUnitOfWork.Setup(x => x.SaveChanges());
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, false))
                 .Returns(new List<Vila>());
 
-            var controller = new VilaNumberController(_mockUnitOfWork.Object);
+            var controller = new VilaNumberController(_mockVilaNumberService.Object, _mockVilaService.Object);
             MockHelper.SetupControllerContext(controller);
 
             // Act
@@ -104,10 +116,10 @@ namespace VilaManagement.Tests.Controllers
 
             _mockUnitOfWork.Setup(x => x.VilaNumber.Any(It.IsAny<System.Linq.Expressions.Expression<Func<VilaNumber, bool>>>()))
                 .Returns(true);
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, false))
                 .Returns(new List<Vila>());
 
-            var controller = new VilaNumberController(_mockUnitOfWork.Object);
+            var controller = new VilaNumberController(_mockVilaNumberService.Object, _mockVilaService.Object);
             MockHelper.SetupControllerContext(controller);
 
             // Act
@@ -128,12 +140,15 @@ namespace VilaManagement.Tests.Controllers
                 new Vila { Id = 1, Name = "Vila 1", Description = "Desc", Price = 50000, Sqft = 1000, Occupancy = 4, ImageUrl = "1.jpg" }
             };
 
-            _mockUnitOfWork.Setup(x => x.VilaNumber.Get(It.IsAny<System.Linq.Expressions.Expression<Func<VilaNumber, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.VilaNumber.Get(It.IsAny<System.Linq.Expressions.Expression<Func<VilaNumber, bool>>>(), null, false))
                 .Returns(vilaNumber);
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, false))
                 .Returns(vilas);
 
-            var controller = new VilaNumberController(_mockUnitOfWork.Object);
+            _mockVilaNumberService.Setup(x => x.Get(It.IsAny<int>()))
+                    .Returns(vilaNumber);
+
+            var controller = new VilaNumberController(_mockVilaNumberService.Object, _mockVilaService.Object);
 
             // Act
             var result = controller.Edit(101);
@@ -148,12 +163,12 @@ namespace VilaManagement.Tests.Controllers
         public void Edit_GetRequest_InvalidId_ShouldRedirectToError()
         {
             // Arrange
-            _mockUnitOfWork.Setup(x => x.VilaNumber.Get(It.IsAny<System.Linq.Expressions.Expression<Func<VilaNumber, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.VilaNumber.Get(It.IsAny<System.Linq.Expressions.Expression<Func<VilaNumber, bool>>>(), null, false))
                 .Returns((VilaNumber)null);
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, false))
                 .Returns(new List<Vila>());
 
-            var controller = new VilaNumberController(_mockUnitOfWork.Object);
+            var controller = new VilaNumberController(_mockVilaNumberService.Object, _mockVilaService.Object);
             MockHelper.SetupControllerContext(controller);
 
             // Act
@@ -176,10 +191,10 @@ namespace VilaManagement.Tests.Controllers
 
             _mockUnitOfWork.Setup(x => x.VilaNumber.Update(It.IsAny<VilaNumber>()));
             _mockUnitOfWork.Setup(x => x.SaveChanges());
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, false))
                 .Returns(new List<Vila>());
 
-            var controller = new VilaNumberController(_mockUnitOfWork.Object);
+            var controller = new VilaNumberController(_mockVilaNumberService.Object, _mockVilaService.Object);
             MockHelper.SetupControllerContext(controller);
 
             // Act
@@ -200,12 +215,12 @@ namespace VilaManagement.Tests.Controllers
                 new Vila { Id = 1, Name = "Vila 1", Description = "Desc", Price = 50000, Sqft = 1000, Occupancy = 4, ImageUrl = "1.jpg" }
             };
 
-            _mockUnitOfWork.Setup(x => x.VilaNumber.Get(It.IsAny<System.Linq.Expressions.Expression<Func<VilaNumber, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.VilaNumber.Get(It.IsAny<System.Linq.Expressions.Expression<Func<VilaNumber, bool>>>(), null, false))
                 .Returns(vilaNumber);
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, false))
                 .Returns(vilas);
 
-            var controller = new VilaNumberController(_mockUnitOfWork.Object);
+            var controller = new VilaNumberController(_mockVilaNumberService.Object, _mockVilaService.Object);
 
             // Act
             var result = controller.Delete(101);
@@ -227,14 +242,19 @@ namespace VilaManagement.Tests.Controllers
 
             var numberToDelete = new VilaNumber { Vila_Number = 101, VilaId = 1, SpecialDetails = "Ground Floor" };
 
-            _mockUnitOfWork.Setup(x => x.VilaNumber.Get(It.IsAny<System.Linq.Expressions.Expression<Func<VilaNumber, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.VilaNumber.Get(It.IsAny<System.Linq.Expressions.Expression<Func<VilaNumber, bool>>>(), null, false))
                 .Returns(numberToDelete);
             _mockUnitOfWork.Setup(x => x.VilaNumber.Remove(It.IsAny<VilaNumber>()));
             _mockUnitOfWork.Setup(x => x.SaveChanges());
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, false))
                 .Returns(new List<Vila>());
 
-            var controller = new VilaNumberController(_mockUnitOfWork.Object);
+            _mockVilaNumberService.Setup(x => x.Get(It.IsAny<int>()))
+                   .Returns(numberToDelete);
+            _mockVilaService.Setup(x => x.GetAll())
+                            .Returns(new List<Vila>());
+
+            var controller = new VilaNumberController(_mockVilaNumberService.Object, _mockVilaService.Object);
             MockHelper.SetupControllerContext(controller);
 
             // Act
@@ -256,12 +276,12 @@ namespace VilaManagement.Tests.Controllers
                 VilaList = new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>()
             };
 
-            _mockUnitOfWork.Setup(x => x.VilaNumber.Get(It.IsAny<System.Linq.Expressions.Expression<Func<VilaNumber, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.VilaNumber.Get(It.IsAny<System.Linq.Expressions.Expression<Func<VilaNumber, bool>>>(), null, false))
                 .Returns((VilaNumber)null);
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, false))
                 .Returns(new List<Vila>());
 
-            var controller = new VilaNumberController(_mockUnitOfWork.Object);
+            var controller = new VilaNumberController(_mockVilaNumberService.Object, _mockVilaService.Object);
             MockHelper.SetupControllerContext(controller);
 
             // Act

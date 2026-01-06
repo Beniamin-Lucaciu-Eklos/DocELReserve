@@ -6,6 +6,8 @@ using VilaManagement.Web.Controllers;
 using VilaManagement.Tests.Fixtures;
 using VilaManagement.Infrastructure.IO;
 using VilaManagement.Application.IO;
+using VilaManagement.Application.Services;
+using System.Linq.Expressions;
 
 namespace VilaManagement.Tests.Controllers
 {
@@ -14,46 +16,14 @@ namespace VilaManagement.Tests.Controllers
         private readonly Mock<IFilePathService> _mockfilePathService;
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IWebHostEnvironment> _mockWebHostEnvironment;
+        private readonly Mock<IVilaService> _mockVilaService;
 
         public VilasControllerTests()
         {
             _mockfilePathService = MockHelper.CreateFilePathService();
-            SetupMockFilePathService();
-
             _mockUnitOfWork = MockHelper.CreateMockUnitOfWork();
-
-            _mockWebHostEnvironment = new Mock<IWebHostEnvironment>();
-            _mockWebHostEnvironment.Setup(x => x.WebRootPath).Returns("wwwroot");
-        }
-
-        private void SetupMockFilePathService()
-        {
-            var filePathHelper = new FilePathService();
-
-            _mockfilePathService.Setup(x => x.CreateRootPath(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns<string, string>((root, path) => filePathHelper.CreateRootPath(root, path));
-
-            _mockfilePathService
-                .Setup(x => x.GetFullPath(It.IsAny<IFormFile>(),
-                It.IsAny<string>(), It.IsAny<string>()))
-                .Returns<IFormFile, string, string>((file, root, folder) =>
-                    filePathHelper.GetFullPath(file, root, folder));
-
-            _mockfilePathService
-                .Setup(x => x.GenerateFileName(It.IsAny<IFormFile>()))
-                .Returns<IFormFile>(file => filePathHelper.GenerateFileName(file));
-
-
-            _mockfilePathService
-                .Setup(x => x.GetFileNameFromFullPath(It.IsAny<string>()))
-                .Returns<string>(fullPath => filePathHelper.GetFileNameFromFullPath(fullPath));
-
-            _mockfilePathService
-                .Setup(x => x.Upload(It.IsAny<IFormFile>(), It.IsAny<string>()))
-                .Callback<IFormFile, string>((file, path) => filePathHelper.Upload(file, path));
-
-            _mockfilePathService.Setup(x => x.Delete(It.IsAny<string>()))
-                .Callback<string>(fullPath => filePathHelper.Delete(fullPath));
+            _mockWebHostEnvironment = MockHelper.CreateMockWebHostEnviroment();
+            _mockVilaService = MockHelper.CreateMockVilaService(_mockUnitOfWork, _mockWebHostEnvironment, _mockfilePathService);
         }
 
         [Fact]
@@ -66,11 +36,10 @@ namespace VilaManagement.Tests.Controllers
                 new Vila { Id = 2, Name = "Vila 2", Description = "Desc", Price = 60000, Sqft = 1200, Occupancy = 5, ImageUrl = "2.jpg" }
             };
 
-            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null))
+            _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, false))
                 .Returns(vilas);
 
-            var controller = new VilasController(_mockUnitOfWork.Object,
-                _mockWebHostEnvironment.Object, _mockfilePathService.Object);
+            var controller = new VilasController(_mockVilaService.Object);
 
             // Act
             var result = controller.Index();
@@ -85,8 +54,7 @@ namespace VilaManagement.Tests.Controllers
         public void Create_GetRequest_ShouldReturnCreateView()
         {
             // Arrange
-            var controller = new VilasController(_mockUnitOfWork.Object,
-                _mockWebHostEnvironment.Object, _mockfilePathService.Object);
+            var controller = new VilasController(_mockVilaService.Object);
 
             // Act
             var result = controller.Create();
@@ -112,8 +80,7 @@ namespace VilaManagement.Tests.Controllers
             _mockUnitOfWork.Setup(x => x.Villa.Add(It.IsAny<Vila>()));
             _mockUnitOfWork.Setup(x => x.SaveChanges());
 
-            var controller = new VilasController(_mockUnitOfWork.Object,
-                _mockWebHostEnvironment.Object, _mockfilePathService.Object);
+            var controller = new VilasController(_mockVilaService.Object);
             MockHelper.SetupControllerContext(controller);
 
             // Act
@@ -140,7 +107,7 @@ namespace VilaManagement.Tests.Controllers
                 ImageUrl = "test.jpg"
             };
 
-            var controller = new VilasController(_mockUnitOfWork.Object, _mockWebHostEnvironment.Object, _mockfilePathService.Object);
+            var controller = new VilasController(_mockVilaService.Object);
             MockHelper.SetupControllerContext(controller);
 
             // Act
@@ -166,11 +133,12 @@ namespace VilaManagement.Tests.Controllers
                 ImageUrl = "test.jpg"
             };
 
-            _mockUnitOfWork.Setup(x => x.Villa.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Vila, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.Villa.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Vila, bool>>>(), null, true))
                 .Returns(vila);
+            _mockVilaService.Setup(x => x.Get(It.IsAny<int>()))
+              .Returns(vila);
 
-            var controller = new VilasController(_mockUnitOfWork.Object,
-                _mockWebHostEnvironment.Object, _mockfilePathService.Object);
+            var controller = new VilasController(_mockVilaService.Object);
 
             // Act
             var result = controller.Edit(1);
@@ -185,11 +153,10 @@ namespace VilaManagement.Tests.Controllers
         public void Edit_GetRequest_InvalidId_ShouldRedirectToError()
         {
             // Arrange
-            _mockUnitOfWork.Setup(x => x.Villa.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Vila, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.Villa.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Vila, bool>>>(), null, false))
                 .Returns((Vila)null);
 
-            var controller = new VilasController(_mockUnitOfWork.Object,
-                _mockWebHostEnvironment.Object, _mockfilePathService.Object);
+            var controller = new VilasController(_mockVilaService.Object);
             MockHelper.SetupControllerContext(controller);
 
             // Act
@@ -215,13 +182,12 @@ namespace VilaManagement.Tests.Controllers
                 ImageUrl = "updated.jpg"
             };
 
-            _mockUnitOfWork.Setup(x => x.Villa.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Vila, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.Villa.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Vila, bool>>>(), null, false))
                 .Returns(vila);
             _mockUnitOfWork.Setup(x => x.Villa.Update(It.IsAny<Vila>()));
             _mockUnitOfWork.Setup(x => x.SaveChanges());
 
-            var controller = new VilasController(_mockUnitOfWork.Object,
-                _mockWebHostEnvironment.Object, _mockfilePathService.Object);
+            var controller = new VilasController(_mockVilaService.Object);
             MockHelper.SetupControllerContext(controller);
 
             // Act
@@ -248,14 +214,14 @@ namespace VilaManagement.Tests.Controllers
                 ImageUrl = "test.jpg"
             };
 
-            _mockUnitOfWork.Setup(x => x.Villa.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Vila, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.Villa.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Vila, bool>>>(), null, false))
+              .Returns(vila);
+
+            _mockVilaService.Setup(x => x.Get(It.IsAny<int>()))
                 .Returns(vila);
 
-            _mockUnitOfWork.Setup(x => x.Villa.Remove(It.IsAny<Vila>()));
-            _mockUnitOfWork.Setup(x => x.SaveChanges());
 
-            var controller = new VilasController(_mockUnitOfWork.Object,
-                _mockWebHostEnvironment.Object, _mockfilePathService.Object);
+            var controller = new VilasController(_mockVilaService.Object);
             MockHelper.SetupControllerContext(controller);
 
             // Act
@@ -270,11 +236,10 @@ namespace VilaManagement.Tests.Controllers
         public void Delete_InvalidId_ShouldRedirectToError()
         {
             // Arrange
-            _mockUnitOfWork.Setup(x => x.Villa.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Vila, bool>>>(), null))
+            _mockUnitOfWork.Setup(x => x.Villa.Get(It.IsAny<System.Linq.Expressions.Expression<Func<Vila, bool>>>(), null, false))
                 .Returns((Vila)null);
 
-            var controller = new VilasController(_mockUnitOfWork.Object,
-                _mockWebHostEnvironment.Object, _mockfilePathService.Object);
+            var controller = new VilasController(_mockVilaService.Object);
             MockHelper.SetupControllerContext(controller);
 
             // Act

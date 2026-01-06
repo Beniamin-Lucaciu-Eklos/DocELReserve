@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using VilaManagement.Application.Common.Interfaces;
+using VilaManagement.Application.Services;
 using VilaManagement.Domain.Entities;
 using VilaManagement.Infrastructure.Data;
 using VilaManagement.Web.UIHelpers;
@@ -12,16 +13,18 @@ namespace VilaManagement.Web.Controllers
 {
     public class VilaNumberController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IVilaNumberService _vilaNumberService;
+        private readonly IVilaService _vilaService;
 
-        public VilaNumberController(IUnitOfWork unitOfWork)
+        public VilaNumberController(IVilaNumberService vilaNumberService, IVilaService vilaService)
         {
-            _unitOfWork = unitOfWork;
+            _vilaNumberService = vilaNumberService;
+            _vilaService = vilaService;
         }
 
         public IActionResult Index()
         {
-            var vilaNumbers = _unitOfWork.VilaNumber.GetAll(includeProperties: new string[] { nameof(Vila) }).ToList();
+            var vilaNumbers = _vilaNumberService.GetAll();
             return View(vilaNumbers);
         }
 
@@ -36,7 +39,7 @@ namespace VilaManagement.Web.Controllers
 
         private List<SelectListItem> GetVitaList()
         {
-            return _unitOfWork.Villa.GetAll()
+            return _vilaService.GetAll()
                             .Select(vila => new SelectListItem
                             {
                                 Text = vila.Name,
@@ -51,11 +54,10 @@ namespace VilaManagement.Web.Controllers
 
             vmVilaNumber.VilaList ??= GetVitaList();
 
-            bool isVilaNumberExists = _unitOfWork.VilaNumber.Any(vn => vn.Vila_Number == vmVilaNumber.VilaNumber.Vila_Number);
+            bool isVilaNumberExists = _vilaNumberService.Exists(vmVilaNumber.VilaNumber.Vila_Number);
             if (ModelState.IsValid && !isVilaNumberExists)
             {
-                _unitOfWork.VilaNumber.Add(vmVilaNumber.VilaNumber);
-                _unitOfWork.SaveChanges();
+                _vilaNumberService.Add(vmVilaNumber.VilaNumber);
                 this.ShowSuccess("Vila number created successfully.");
                 return RedirectToAction(nameof(Index));
             }
@@ -72,7 +74,7 @@ namespace VilaManagement.Web.Controllers
             VilaNumberViewModel vmVillaNumber = new VilaNumberViewModel
             {
                 VilaList = GetVitaList(),
-                VilaNumber = _unitOfWork.VilaNumber.Get(vila => vila.Vila_Number == vilaNumberId)
+                VilaNumber = _vilaNumberService.Get(vilaNumberId)
             };
             if (vmVillaNumber.VilaNumber is null)
             {
@@ -91,8 +93,7 @@ namespace VilaManagement.Web.Controllers
             vmVilaNumber.VilaList ??= GetVitaList();
             if (ModelState.IsValid)
             {
-                _unitOfWork.VilaNumber.Update(vmVilaNumber.VilaNumber);
-                _unitOfWork.SaveChanges();
+                _vilaNumberService.Update(vmVilaNumber.VilaNumber);
                 this.ShowSuccess("Vila number updated successfully.");
                 return RedirectToAction(nameof(Index));
             }
@@ -104,7 +105,7 @@ namespace VilaManagement.Web.Controllers
             VilaNumberViewModel vmVillaNumber = new VilaNumberViewModel
             {
                 VilaList = GetVitaList(),
-                VilaNumber = _unitOfWork.VilaNumber.Get(vila => vila.Vila_Number == vilaNumberId)!
+                VilaNumber = _vilaNumberService.Get(vilaNumberId)!
             };
             return View(vmVillaNumber);
         }
@@ -112,16 +113,14 @@ namespace VilaManagement.Web.Controllers
         [HttpPost]
         public IActionResult Delete(VilaNumberViewModel vmVilaNumber)
         {
-            var dbVilaNumber = _unitOfWork.VilaNumber.Get(vilaNumber => vilaNumber.Vila_Number == vmVilaNumber.VilaNumber.Vila_Number);
+            var dbVilaNumber = _vilaNumberService.Get(vmVilaNumber.VilaNumber.Vila_Number);
             if (dbVilaNumber is null)
             {
                 this.ShowError("Vila number not found.");
                 return RedirectToAction(nameof(HomeController.Error), "Home");
             }
 
-            _unitOfWork.VilaNumber.Remove(dbVilaNumber);
-            _unitOfWork.SaveChanges();
-
+            _vilaNumberService.Remove(dbVilaNumber);
             this.ShowSuccess($"Vila number {dbVilaNumber.Vila_Number} deleted successfully.");
             return RedirectToAction(nameof(Index));
         }

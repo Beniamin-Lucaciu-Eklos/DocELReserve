@@ -123,13 +123,25 @@
   <data name="ApplicationName" xml:space="preserve">
     <value>Vila Management</value>
   </data>
+  <data name="AriaToggleNavigation" xml:space="preserve">
+    <value>Toggle navigation</value>
+  </data>
   <data name="ContentManagement" xml:space="preserve">
     <value>Content Management</value>
+  </data>
+  <data name="NavHome" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="VilaCreateTitle" xml:space="preserve">
+    <value>Create Vila</value>
   </data>
   <data name="VilaNumber" xml:space="preserve">
     <value>Vila Number</value>
   </data>
   <data name="Vilas" xml:space="preserve">
     <value>Vilas</value>
+  </data>
+  <data name="VilaUpdateTitle" xml:space="preserve">
+    <value>Update Vila</value>
   </data>
 </root>

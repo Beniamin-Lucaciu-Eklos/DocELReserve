@@ -123,8 +123,14 @@
   <data name="ApplicationName" xml:space="preserve">
     <value>Administrarea vilei</value>
   </data>
+  <data name="AriaToggleNavigation" xml:space="preserve">
+    <value>Toggle navigation</value>
+  </data>
   <data name="ContentManagement" xml:space="preserve">
     <value>Gestionarea conținutului</value>
+  </data>
+  <data name="NavHome" xml:space="preserve">
+    <value>Home</value>
   </data>
   <data name="VilaNumber" xml:space="preserve">
     <value>Numărul Vila</value>

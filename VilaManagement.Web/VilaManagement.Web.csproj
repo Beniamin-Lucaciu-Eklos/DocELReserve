@@ -12,6 +12,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.11" />
+    <PackageReference Include="Open-XML-SDK" Version="2.9.1" />
     <PackageReference Include="Stripe.net" Version="50.1.0" />
   </ItemGroup>
 
@@ -22,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\Vila\" />
+    <Folder Include="wwwroot\exports\" />
   </ItemGroup>
 
 </Project>

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using VilaManagement.Application.Common.Interfaces;
 using VilaManagement.Application.IO;
+using VilaManagement.Application.Services;
 using VilaManagement.Domain.Entities;
 using VilaManagement.Infrastructure.Data;
 using VilaManagement.Web.UIHelpers;
@@ -11,23 +12,16 @@ namespace VilaManagement.Web.Controllers
     [Authorize]
     public class VilasController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly IFilePathService _filePathService;
+        private readonly IVilaService _vilaService;
 
-        public VilasController(
-        IUnitOfWork unitOfWork,
-        IWebHostEnvironment webHostEnvironment,
-        IFilePathService filePathService)
+        public VilasController(IVilaService vilaService)
         {
-            _unitOfWork = unitOfWork;
-            _webHostEnvironment = webHostEnvironment;
-            _filePathService = filePathService;
+            _vilaService = vilaService;
         }
 
         public IActionResult Index()
         {
-            var vilas = _unitOfWork.Villa.GetAll();
+            var vilas = _vilaService.GetAll();
             return View(vilas);
         }
 
@@ -50,8 +44,7 @@ namespace VilaManagement.Web.Controllers
 
             ProcessVilaImage(vila);
 
-            _unitOfWork.Villa.Add(vila);
-            _unitOfWork.SaveChanges();
+            _vilaService.Add(vila);
 
             this.ShowSuccess("Vila created successfully.");
             return RedirectToAction(nameof(Index));
@@ -71,7 +64,7 @@ namespace VilaManagement.Web.Controllers
 
         public IActionResult Edit(int id)
         {
-            var vila = GetVilaById(id);
+            var vila = _vilaService.Get(id);
             if (vila is null)
             {
                 return RedirectToErrorPage("Vila not found.");
@@ -92,12 +85,11 @@ namespace VilaManagement.Web.Controllers
 
             if (vila.Image is not null)
             {
-                DeleteExistingImage(vila);
+                _vilaService.DeleteImage(vila);
                 ProcessVilaImage(vila);
             }
 
-            _unitOfWork.Villa.Update(vila);
-            _unitOfWork.SaveChanges();
+            _vilaService.Update(vila);
 
             this.ShowSuccess("Vila updated successfully.");
             return RedirectToAction(nameof(Index));
@@ -105,64 +97,25 @@ namespace VilaManagement.Web.Controllers
 
         private void ProcessVilaImage(Vila vila)
         {
-            if (vila.Image is not null)
-            {
-                var imagePath = _filePathService.GetFullPath(
-                    vila.Image,
-                    _webHostEnvironment.WebRootPath,
-                    FileStorageConstants.VilaImagesFolderPath);
-
-                _filePathService.Upload(vila.Image, imagePath);
-
-                var fileName = _filePathService.GetFileNameFromFullPath(imagePath);
-                vila.ImageUrl = _filePathService.CreateRelativePath(
-                    FileStorageConstants.VilaImagesFolderPath,
-                    fileName);
-            }
-            else
-            {
-                vila.ImageUrl = FileStorageConstants.NoImageVilaPlaceHolder;
-            }
+            _vilaService.SaveImageUrl(vila);
+            _vilaService.UploadImage(vila);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
-            var vila = GetVilaById(id);
+            var vila = _vilaService.Get(id);
             if (vila is null)
             {
                 return RedirectToErrorPage("Vila not found.");
             }
 
-            DeleteExistingImage(vila);
-
-            _unitOfWork.Villa.Remove(vila);
-            _unitOfWork.SaveChanges();
+            _vilaService.DeleteImage(vila);
+            _vilaService.Remove(vila);
 
             this.ShowSuccess($"Vila '{vila.Name}' deleted successfully.");
             return RedirectToAction(nameof(Index));
-        }
-
-        private Vila GetVilaById(int id)
-        {
-            return _unitOfWork.Villa.Get(v => v.Id == id);
-        }
-
-        private void DeleteExistingImage(Vila vila)
-        {
-            if (string.IsNullOrEmpty(vila.ImageUrl)
-                || vila.ImageUrl == FileStorageConstants.NoImageVilaPlaceHolder)
-            {
-                return;
-            }
-
-            var normalizedPath = vila.ImageUrl
-                .Replace("~/", string.Empty)
-                .Replace("/", Path.DirectorySeparatorChar.ToString());
-
-            var fullPath = Path.Combine(_webHostEnvironment.WebRootPath, normalizedPath);
-            _filePathService.Delete(fullPath);
         }
 
         private IActionResult RedirectToErrorPage(string errorMessage)
