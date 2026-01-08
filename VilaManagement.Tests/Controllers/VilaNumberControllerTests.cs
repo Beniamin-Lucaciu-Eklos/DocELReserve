@@ -119,6 +119,11 @@ namespace VilaManagement.Tests.Controllers
             _mockUnitOfWork.Setup(x => x.Villa.GetAll(null, null, false))
                 .Returns(new List<Vila>());
 
+            _mockVilaService.Setup(x => x.GetAll())
+                .Returns(new List<Vila>());
+            _mockVilaNumberService.Setup(x => x.Exists(It.IsAny<int>()))
+                .Returns(true);
+
             var controller = new VilaNumberController(_mockVilaNumberService.Object, _mockVilaService.Object);
             MockHelper.SetupControllerContext(controller);
 
